@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.BizTalk.Component.Interop;
+using System.Reflection;
 
 namespace BizTalkComponents.Utilities.ComponentInstrumentation
 {
@@ -13,38 +14,44 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
         private readonly IComponentTracker _componentInstrumentation;
 
         private Stopwatch stopWatch = new Stopwatch();
+        private DateTime startTime;
+        private string version;
 
         public ComponentInstrumentationHelper(IComponentTracker componentInstrumentation)
         {
-            if(componentInstrumentation == null)
+            if (componentInstrumentation == null)
             {
                 throw new ArgumentNullException("componentInstrumentation");
             }
 
             _componentInstrumentation = componentInstrumentation;
-        }
-
-        public void TrackComponentException(Exception ex)
-        {
-            _componentInstrumentation.TrackComponentException(ex);
-        }
-
-        public void TrackComponentStart(IPipelineContext ctx)
-        {
+            startTime = DateTime.UtcNow;
             stopWatch.Start();
-            _componentInstrumentation.TrackComponentStartEvent(ctx.PipelineName, ctx.StageID.ToString());
+            version = getVersion();
         }
 
-        public void TrackComponentEnd()
+        public void TrackComponentException(Exception ex, string componentName)
+        {
+            stopWatch.Stop();
+            _componentInstrumentation.TrackComponentException(ex, startTime, stopWatch.Elapsed, componentName, version);
+        }
+
+
+        public void TrackExecution(string componentName)
         {
             stopWatch.Stop();
 
-            _componentInstrumentation.TrackDuration(stopWatch.Elapsed);
-
+            _componentInstrumentation.TrackExecution(startTime, componentName, stopWatch.Elapsed, version);
             stopWatch.Reset();
-            _componentInstrumentation.Finish();
-
         }
-        
+
+        private string getVersion()
+        {
+            var assembly = Assembly
+               .GetCallingAssembly();
+
+            return FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
+        }
+
     }
 }

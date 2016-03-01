@@ -19,30 +19,22 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
             TelemetryConfiguration.Active.InstrumentationKey = "3e9ea04c-ebdf-4070-bb39-f3f57967aa16";
             tc.Context.Session.Id = Guid.NewGuid().ToString();
             tc.Context.Properties["client"] = getClientId();
+            
         }
 
-        public void TrackComponentStartEvent(string componentName, string componentStage)
+        public void TrackComponentException(Exception ex, DateTime startDateTime, TimeSpan duration, string componentName, string componentVersion)
         {
-            var et = new EventTelemetry("execute");
-            et.Properties["stageid"] = componentStage;
-            et.Properties["componentname"] = componentName;
-            tc.TrackEvent(et);
-            tc.TrackPageView(componentName);
-        }
-
-        public void TrackDuration(TimeSpan timeSpan)
-        {
-            tc.TrackMetric("Execution duration", timeSpan.TotalMilliseconds);
-        }
-
-        public void TrackComponentException(Exception ex)
-        {
+            startDateTime = DateTime.SpecifyKind(startDateTime, DateTimeKind.Utc);
+            tc.TrackRequest(componentName, startDateTime, duration, "500", false);
+            tc.Context.Component.Version = componentVersion;
             tc.TrackException(ex);
         }
 
-        public void Finish()
+        public void TrackExecution(DateTime startDateTime, string componentName, TimeSpan duration, string componentVersion)
         {
-            tc.Flush();
+            startDateTime = DateTime.SpecifyKind(startDateTime, DateTimeKind.Utc);
+            tc.Context.Component.Version = componentVersion;
+            tc.TrackRequest(componentName, startDateTime, duration, "200", true);
         }
 
         private string getClientId()
