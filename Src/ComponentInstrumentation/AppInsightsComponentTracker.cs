@@ -14,12 +14,15 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
     {
         private readonly TelemetryClient tc = new TelemetryClient();
 
-        public AppInsightsComponentTracker()
+        public AppInsightsComponentTracker(string trackingApiKey)
         {
-            TelemetryConfiguration.Active.InstrumentationKey = "3e9ea04c-ebdf-4070-bb39-f3f57967aa16";
+            if(string.IsNullOrEmpty(trackingApiKey))
+            {
+                throw new ArgumentNullException("trackingApiKey");
+            }
+
+            TelemetryConfiguration.Active.InstrumentationKey = trackingApiKey;
             tc.Context.Session.Id = Guid.NewGuid().ToString();
-            tc.Context.Properties["client"] = getClientId();
-            
         }
 
         public void TrackComponentException(Exception ex, DateTime startDateTime, TimeSpan duration, string componentName, string componentVersion)
@@ -35,23 +38,6 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
             startDateTime = DateTime.SpecifyKind(startDateTime, DateTimeKind.Utc);
             tc.Context.Component.Version = componentVersion;
             tc.TrackRequest(componentName, startDateTime, duration, "200", true);
-        }
-
-        private string getClientId()
-        {
-            var md5 = MD5.Create();
-
-            var bytes = Encoding.ASCII.GetBytes(Environment.MachineName);
-            var hash = md5.ComputeHash(bytes);
-
-            var sb = new StringBuilder();
-
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-
-            return sb.ToString();
         }
     }
 }
