@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BizTalkComponents.Utilities.ComponentInstrumentation</id>
-    <version>$version$</version>
+    <version>1.0.0-beta1</version>
     <authors>Robin Hultman</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/BizTalkComponents/ComponentInstrumentation</projectUrl>
