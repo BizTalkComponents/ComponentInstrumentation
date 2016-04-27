@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using Microsoft.BizTalk.Component.Interop;
 using System.Reflection;
 
 namespace BizTalkComponents.Utilities.ComponentInstrumentation
@@ -16,35 +15,38 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
         private Stopwatch stopWatch = new Stopwatch();
         private DateTime startTime;
         private string version;
+        private string _componentName;
 
-        public ComponentInstrumentationHelper(IComponentTracker componentInstrumentation)
+        public ComponentInstrumentationHelper(IComponentTracker componentInstrumentation, string componentName)
         {
             if (componentInstrumentation == null)
             {
                 throw new ArgumentNullException("componentInstrumentation");
             }
 
+            if(string.IsNullOrEmpty(componentName))
+            {
+                throw new ArgumentNullException("componentName");
+            }
+
             _componentInstrumentation = componentInstrumentation;
             startTime = DateTime.UtcNow;
             stopWatch.Start();
             version = getVersion();
+            _componentName = componentName;
         }
 
-        public void TrackComponentException(Exception ex, string componentName)
+        public void TrackComponentError(Exception ex)
         {
             stopWatch.Stop();
-            _componentInstrumentation.TrackComponentException(ex, startTime, stopWatch.Elapsed, componentName, version);
+            _componentInstrumentation.TrackComponentError(DateTime.UtcNow,stopWatch.Elapsed, ex, _componentName, version);
         }
-
-
-        public void TrackExecution(string componentName)
+        
+        public void TrackComponentSuccess()
         {
             stopWatch.Stop();
-
-            _componentInstrumentation.TrackExecution(startTime, componentName, stopWatch.Elapsed, version);
-            stopWatch.Reset();
+            _componentInstrumentation.TrackComponentSuccess(DateTime.UtcNow, stopWatch.Elapsed, _componentName, version);
         }
-
         private string getVersion()
         {
             var assembly = Assembly
