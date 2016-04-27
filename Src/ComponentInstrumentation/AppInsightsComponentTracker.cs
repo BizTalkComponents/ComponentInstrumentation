@@ -2,11 +2,6 @@
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BizTalkComponents.Utilities.ComponentInstrumentation
 {
@@ -28,10 +23,9 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
         public void TrackComponentError(DateTime endDateTime, TimeSpan duration, Exception ex, string componentName, string componentVersion)
         {
             endDateTime = DateTime.SpecifyKind(endDateTime, DateTimeKind.Utc);
-            tc.TrackRequest(componentName, endDateTime, duration, "500", false);
             tc.Context.Component.Version = componentVersion;
+
             tc.TrackException(ex);
-            tc.Flush();
         }
 
         public void TrackComponentSuccess(DateTime endDateTime, TimeSpan duration, string componentName, string componentVersion)
@@ -39,7 +33,11 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
             endDateTime = DateTime.SpecifyKind(endDateTime, DateTimeKind.Utc);
             tc.Context.Component.Version = componentVersion;
             tc.TrackRequest(componentName, endDateTime, duration, "200", true);
-            tc.Flush();
+            var pv = new PageViewTelemetry();
+            pv.Duration = duration;
+            pv.Name = componentName;
+            pv.Timestamp = endDateTime;
+            tc.TrackPageView(pv);
         }
     }
 }
