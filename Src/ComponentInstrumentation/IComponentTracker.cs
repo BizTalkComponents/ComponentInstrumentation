@@ -8,7 +8,7 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
 {
     public interface IComponentTracker
     {
-        void TrackExecution(DateTime startDateTime, string componentName, TimeSpan duration, string componentVersion);
-        void TrackComponentException(Exception ex, DateTime startDateTime, TimeSpan duration, string componentName, string componentVersion);
+        void TrackComponentSuccess(DateTime endDateTime, TimeSpan duration, string componentName, string componentVersion);
+        void TrackComponentError(DateTime endDateTime, TimeSpan duration, Exception ex, string componentName, string componentVersion);
     }
 }
