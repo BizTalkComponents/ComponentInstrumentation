@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BizTalkComponents.Utilities.ComponentInstrumentation</id>
+    <version>$version$</version>
+    <authors>Robin Hultman</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/BizTalkComponents/ComponentInstrumentation</projectUrl>
+    <description>Helper classes for tracking component execution.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>BizTalk</tags>
+  </metadata>
+</package>
