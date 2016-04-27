@@ -25,19 +25,21 @@ namespace BizTalkComponents.Utilities.ComponentInstrumentation
             tc.Context.Session.Id = Guid.NewGuid().ToString();
         }
 
-        public void TrackComponentException(Exception ex, DateTime startDateTime, TimeSpan duration, string componentName, string componentVersion)
+        public void TrackComponentError(DateTime endDateTime, TimeSpan duration, Exception ex, string componentName, string componentVersion)
         {
-            startDateTime = DateTime.SpecifyKind(startDateTime, DateTimeKind.Utc);
-            tc.TrackRequest(componentName, startDateTime, duration, "500", false);
+            endDateTime = DateTime.SpecifyKind(endDateTime, DateTimeKind.Utc);
+            tc.TrackRequest(componentName, endDateTime, duration, "500", false);
             tc.Context.Component.Version = componentVersion;
             tc.TrackException(ex);
+            tc.Flush();
         }
 
-        public void TrackExecution(DateTime startDateTime, string componentName, TimeSpan duration, string componentVersion)
+        public void TrackComponentSuccess(DateTime endDateTime, TimeSpan duration, string componentName, string componentVersion)
         {
-            startDateTime = DateTime.SpecifyKind(startDateTime, DateTimeKind.Utc);
+            endDateTime = DateTime.SpecifyKind(endDateTime, DateTimeKind.Utc);
             tc.Context.Component.Version = componentVersion;
-            tc.TrackRequest(componentName, startDateTime, duration, "200", true);
+            tc.TrackRequest(componentName, endDateTime, duration, "200", true);
+            tc.Flush();
         }
     }
 }
