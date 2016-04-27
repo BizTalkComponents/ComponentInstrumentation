@@ -71,6 +71,7 @@
     <Compile Include="TraceComponentTracker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BizTalkComponents.Utilities.ComponentInstrumentation.nuspec" />
     <None Include="BizTalkComponents.Utilities.ComponentInstrumentation.snk" />
     <None Include="packages.config" />
   </ItemGroup>
